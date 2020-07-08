@@ -32,12 +32,13 @@ const signupUser = (req, res, next) => {
 
 const loginUser = (req, res, next) => {
   const { name, password } = req.body;
+  const existingUser = DUMMY_USERS.find((u) => u.name === name);
 
-  if (name && password) {
-    res.status(200).json({ message: "Success login!" });
-  } else {
-    res.status(401).json({ message: "Authentication failed!" });
+  if (name && existingUser && existingUser.password === password) {
+    return res.status(200).json({ message: "Success login!" });
   }
+
+  res.status(401).json({ message: "Authentication failed!" });
 };
 
 exports.getUsers = getUsers;
