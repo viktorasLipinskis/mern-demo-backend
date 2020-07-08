@@ -12,7 +12,7 @@ let DUMMY_USERS = [
 ];
 
 const getUsers = (req, res, next) => {
-  res.json(DUMMY_USERS);
+  res.json({ users: DUMMY_USERS });
 };
 
 const signupUser = (req, res, next) => {
@@ -32,13 +32,13 @@ const signupUser = (req, res, next) => {
 
 const loginUser = (req, res, next) => {
   const { name, password } = req.body;
-  const existingUser = DUMMY_USERS.find((u) => u.name === name);
+  const existingUser = DUMMY_USERS.find((u) => u.email === email);
 
-  if (name && existingUser && existingUser.password === password) {
+  if (existingUser && existingUser.password === password) {
     return res.status(200).json({ message: "Success login!" });
   }
 
-  res.status(401).json({ message: "Authentication failed!" });
+  next(new HttpError("Authentication failed!", 401));
 };
 
 exports.getUsers = getUsers;
