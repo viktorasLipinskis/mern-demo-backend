@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 
 const placesRoutes = require("./routes/places-routes");
 const userRoutes = require("./routes/users-routes");
@@ -26,4 +27,11 @@ app.use((req, res, next) => {
   next(new HttpError("Could not find this route.", 404));
 });
 
-app.listen(5000);
+mongoose
+  .connect(
+    "mongodb+srv://learning:default@cluster0.fxd7d.mongodb.net/places?retryWrites=true&w=majority"
+  )
+  .then(() => {
+    app.listen(5000);
+  })
+  .catch((error) => console.log(error));
