@@ -8,12 +8,12 @@ const getUsers = async (req, res, next) => {
   let users;
 
   try {
-    users = await User.find();
+    users = await User.find({}, "-password");
   } catch (err) {
     return next(new HttpError("Something went wrong on user getting", 500));
   }
 
-  res.json(users.map((u) => u.toObject({ getters: true })));
+  res.json({ users: users.map((u) => u.toObject({ getters: true })) });
 };
 
 const signupUser = async (req, res, next) => {
