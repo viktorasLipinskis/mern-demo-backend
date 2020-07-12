@@ -4,17 +4,16 @@ const { validationResult } = require("express-validator");
 const HttpError = require("../models/http-error");
 const User = require("../models/user");
 
-let DUMMY_USERS = [
-  {
-    id: "u1",
-    name: "Viktoras Lipinskis",
-    email: "viktoras.lipinskis@gmail.com",
-    password: "hello",
-  },
-];
+const getUsers = async (req, res, next) => {
+  let users;
 
-const getUsers = (req, res, next) => {
-  res.json({ users: DUMMY_USERS });
+  try {
+    users = await User.find();
+  } catch (err) {
+    return next(new HttpError("Something went wrong on user getting", 500));
+  }
+
+  res.json(users.map((u) => u.toObject({ getters: true })));
 };
 
 const signupUser = async (req, res, next) => {
