@@ -29,7 +29,7 @@ app.use((req, res, next) => {
 
 mongoose
   .connect(
-    "mongodb+srv://learning:default@cluster0.fxd7d.mongodb.net/places?retryWrites=true&w=majority"
+    "mongodb+srv://learning:default@cluster0.fxd7d.mongodb.net/mern?retryWrites=true&w=majority"
   )
   .then(() => {
     app.listen(5000);
