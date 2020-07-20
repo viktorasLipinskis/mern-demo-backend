@@ -62,7 +62,7 @@ const signupUser = async (req, res, next) => {
     const error = new HttpError("Something went wrong on user signup", 500);
     return next(error);
   }
-  res.status(201).json(createdUser.toObject({ getters: true }));
+  res.status(201).json({ user: createdUser.toObject({ getters: true }) });
 };
 
 const loginUser = async (req, res, next) => {
@@ -79,7 +79,10 @@ const loginUser = async (req, res, next) => {
     return next(new HttpError("Invalid credentials, could not log you id."));
   }
 
-  return res.status(200).json({ message: "Success login!" });
+  return res.status(200).json({
+    message: "Success login!",
+    user: existingUser.toObject({ getters: true }),
+  });
 };
 
 exports.getUsers = getUsers;
