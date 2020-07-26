@@ -120,6 +120,11 @@ const updatePlaceById = async (req, res, next) => {
     throw new HttpError("Invalid inputs passed, please check your data.", 422);
   }
 
+  if (place.creator.toString() !== req.userData.userId) {
+    const error = new HttpError("You are not allowed to edit this place.", 401);
+    return next(error);
+  }
+
   let place;
   try {
     place = await Place.findById(placeId);
