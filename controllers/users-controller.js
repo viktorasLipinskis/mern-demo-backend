@@ -1,5 +1,6 @@
 const { v4: uuid } = require("uuid");
 const { validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
 
 const HttpError = require("../models/http-error");
 const User = require("../models/user");
@@ -47,12 +48,19 @@ const signupUser = async (req, res, next) => {
     );
   }
 
+  let hashedPassword;
+  try {
+    hashedPassword = await bcrypt.hash(password, 12);
+  } catch (err) {
+    const error = new HttpError("Could not create user, pleas tyr again.", 500);
+  }
+
   const createdUser = new User({
     name,
     email,
     image:
       "https://media-exp1.licdn.com/dms/image/C5103AQEb1E521htbcQ/profile-displayphoto-shrink_400_400/0?e=1599696000&v=beta&t=-0_ry-kc5Hdl4qoaX6pGISwioILvC-onWwOi0PrPa3s",
-    password,
+    password: hashedPassword,
     places: [],
   });
 
@@ -75,7 +83,22 @@ const loginUser = async (req, res, next) => {
     return next(new HttpError("Login up failed, please try again later."));
   }
 
-  if (!existingUser || existingUser.password !== password) {
+  if (!existingUser) {
+    return next(new HttpError("Invalid credentials, could not log you id."));
+  }
+
+  let isValidPassword = false;
+  try {
+    isValidPassword = await bcrypt.compare(password, existingUser.password);
+  } catch (err) {
+    const error = new HttpError(
+      "Could not log you in, please check you credentials and tyr again.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!isValidPassword) {
     return next(new HttpError("Invalid credentials, could not log you id."));
   }
 
